@@ -42,8 +42,8 @@ local function wrap(options, read, write, socket)
   assert(options.database, "options.database is required")
 
   -- Apply the codec to the stream
-  read = coroWrapper.reader(read, decode)
-  write = coroWrapper.writer(write, encode)
+  read = coroWrapper.decoder(read, decode)
+  write = coroWrapper.encoder(write, encode)
 
   -- Send the StartupMessage
   write {'StartupMessage', {

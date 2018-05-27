@@ -1,6 +1,6 @@
 --[[lit-meta
   name = "creationix/postgres-codec"
-  version = "0.2.0-1"
+  version = "0.3.0"
   homepage = "https://github.com/creationix/lua-postgres/blob/master/postgres-codec.lua"
   description = "A pure lua implementation of the postgresql wire protocol.."
   tags = {"psql", "postgres", "codec", "db", "database"}
@@ -334,23 +334,26 @@ local parsers = {
   end
 }
 
-local function decode (string)
-  if #string < 5 then return end
+local function decode (buffer, index)
+  -- Temporary fix to work with latest coro-wrapper
+  local input = buffer:sub(index)
+  local length = #buffer
+
+  if length - index < 4 then return end
   -- read bytes 2-5 decode as an integer and that will tell us the length
-  local len, index = readUint32(string, 2)
-  if #string < len + 1 then return end
+  local len, newIndex = readUint32(buffer, index + 1)
+  if length < len + 1 then return end
   len = len - 4
 
   --grab the first value. Which tells us which table/thing we are doing
-  local parse = parsers[byte(string, 1)]
+  local parse = parsers[byte(buffer, index)]
   if not parse then
-    error('Unhandled response code: ' .. sub(string, 1, 1))
+    error('Unhandled response code: ' .. sub(buffer, index, index))
   end
 
-  local data = sub(string, index, index + len - 1) .. "\0"
-  local extra = sub(string, index + len)
+  local data = sub(buffer, newIndex, newIndex + len - 1) .. "\0"
 
-  return {parse(data)}, extra
+  return {parse(data)}, newIndex + len
 end
 
 return {
