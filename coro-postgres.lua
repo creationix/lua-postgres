@@ -1,11 +1,11 @@
 --[[lit-meta
   name = "creationix/coro-postgres"
-  version = "0.4.4-1"
+  version = "0.5.0"
   dependencies = {
-    "creationix/coro-wrapper@2.0.0",
-    "creationix/coro-net@2.0.0",
-    "creationix/postgres-codec@0.2.0",
-    "creationix/md5@1.0.2"
+    "creationix/coro-wrapper@3",
+    "creationix/coro-net@3",
+    "creationix/postgres-codec@0.3",
+    "creationix/md5@1"
   }
   homepage = "https://github.com/creationix/lua-postgres/blob/master/coro-postgres.lua"
   description = "coro-net enabled postgres client using postgres-codec."

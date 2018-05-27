@@ -1,6 +1,6 @@
 --[[lit-meta
   name = "creationix/postgres-codec"
-  version = "0.3.0"
+  version = "0.3.1"
   homepage = "https://github.com/creationix/lua-postgres/blob/master/postgres-codec.lua"
   description = "A pure lua implementation of the postgresql wire protocol.."
   tags = {"psql", "postgres", "codec", "db", "database"}
