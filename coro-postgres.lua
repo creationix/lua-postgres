@@ -1,6 +1,6 @@
 --[[lit-meta
   name = "creationix/coro-postgres"
-  version = "0.6.2"
+  version = "0.6.3"
   dependencies = {
     "creationix/coro-wrapper@3",
     "creationix/coro-net@3",
@@ -41,7 +41,7 @@ local function wrap(options, read, write, socket)
   assert(options.username, "options.username is required")
   assert(options.database, "options.database is required")
 
-  p(socket:nodelay(true))
+  socket:nodelay(true)
 
   -- Apply the codec to the stream
   read = coroWrapper.decoder(read, decode)
