@@ -1,10 +1,10 @@
 --[[lit-meta
   name = "creationix/coro-postgres"
-  version = "0.6.0"
+  version = "0.6.1"
   dependencies = {
     "creationix/coro-wrapper@3",
     "creationix/coro-net@3",
-    "creationix/postgres-codec@0.3",
+    "creationix/postgres-codec@0.4",
     "creationix/md5@1"
   }
   homepage = "https://github.com/creationix/lua-postgres/blob/master/coro-postgres.lua"
