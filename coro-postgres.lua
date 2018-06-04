@@ -1,6 +1,6 @@
 --[[lit-meta
   name = "creationix/coro-postgres"
-  version = "0.5.0"
+  version = "0.6.0"
   dependencies = {
     "creationix/coro-wrapper@3",
     "creationix/coro-net@3",
