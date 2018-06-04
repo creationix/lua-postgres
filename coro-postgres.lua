@@ -138,6 +138,8 @@ local function wrap(options, read, write, socket)
       elseif message[1] == "RowDescription" then
         description = message[2]
         rows = {}
+      elseif message[1] == 'BindCompletion' then
+        -- Do nothing
       elseif message[1] == "DataRow" then
         local row = {}
         rows[#rows + 1] = row
@@ -183,6 +185,15 @@ local function wrap(options, read, write, socket)
     return coroutine.yield()
   end
 
+  local function execute(name, ...)
+    write {'Bind', '', name, ...}
+    write {'Describe', 'P', ''}
+    write {'Execute', '', 0}
+    write {'Sync'}
+    waiting = coroutine.running()
+    return coroutine.yield()
+  end
+
   local function close()
     return write()
   end
@@ -191,6 +202,7 @@ local function wrap(options, read, write, socket)
     close = close,
     params = params,
     query = query,
+    execute = execute,
     socket = socket
   }
 end

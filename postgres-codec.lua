@@ -174,15 +174,41 @@ function encoders.FunctionCall()
 end
 
 function encoders.Parse(name, query, var_types)
-  assert(type(var_types) == "table")
   assert(type(name) == "string")
   assert(type(query) == "string")
+  assert(type(var_types) == "table")
   return frame('P', concat(
     writeCstring(name),
     writeCstring(query),
     writeUint16(#var_types),
     writeUint32List(var_types)
   ))
+end
+
+function encoders.Bind(portal_name, source_name, ...)
+  assert(type(portal_name) == "string")
+  assert(type(source_name) == "string")
+  local nargs = select('#', ...)
+  local values = {...}
+  local message = {
+    writeCstring(portal_name),
+    writeCstring(source_name),
+    writeUint16(0),  -- all parameters are text
+    writeUint16(nargs),
+  }
+  for i = 1, nargs do
+    local val = values[i]
+    if not val then
+      message[#message + 1] = writeUint32(-1)
+    else
+      assert(type(val) == 'string')
+      message[#message + 1] = writeUint32(#val)
+      message[#message + 1] = val
+    end
+  end
+  -- All results are text format
+  message[#message + 1] = writeUint16(0)
+  return frame('B', concat(message))
 end
 
 function encoders.PasswordMessage(password)
@@ -218,14 +244,14 @@ end
 
 local function encode(message)
   -- message is a table with two values
-  local request, data = message[1], message[2]
+  local request = message[1]
   local formatter = encoders[request]
 
   if not formatter then
     error('No such request type: ' .. request)
   end
 
-  return formatter(data)
+  return formatter(unpack(message, 2))
 end
 
 
@@ -244,6 +270,9 @@ local authRequests = {
 -- Input is (string, index) where index is the first byte to start reading at.
 -- Output is (type, data...)
 local parsers = {
+  [byte('2', 1)] = function (string)
+    return 'BindCompletion'
+  end,
 
   -- Parse the various Authentication* responses
   [byte('R', 1)] = function (string)
