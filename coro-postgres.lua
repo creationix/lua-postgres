@@ -1,10 +1,10 @@
 --[[lit-meta
   name = "creationix/coro-postgres"
-  version = "0.6.3"
+  version = "0.6.4"
   dependencies = {
     "creationix/coro-wrapper@3",
     "creationix/coro-net@3",
-    "creationix/postgres-codec@0.4",
+    "creationix/postgres-codec@0.5",
     "creationix/md5@1"
   }
   homepage = "https://github.com/creationix/lua-postgres/blob/master/coro-postgres.lua"
@@ -188,10 +188,12 @@ local function wrap(options, read, write, socket)
   end
 
   local function execute(name, ...)
-    write {'Bind', '', name, ...}
-    write {'Describe', 'P', ''}
-    write {'Execute', '', 0}
-    write {'Sync'}
+    write {
+      {'Bind', '', name, ...},
+      {'Describe', 'P', ''},
+      {'Execute', '', 0},
+      {'Sync'}
+    }
     waiting = coroutine.running()
     return coroutine.yield()
   end

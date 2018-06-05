@@ -1,6 +1,6 @@
 --[[lit-meta
   name = "creationix/postgres-codec"
-  version = "0.4.0"
+  version = "0.5.0"
   homepage = "https://github.com/creationix/lua-postgres/blob/master/postgres-codec.lua"
   description = "A pure lua implementation of the postgresql wire protocol.."
   tags = {"psql", "postgres", "codec", "db", "database"}
@@ -243,8 +243,18 @@ function encoders.Terminate()
 end
 
 local function encode(message)
-  -- message is a table with two values
+  -- message is a table with string name and 0..n parameters
   local request = message[1]
+
+  -- Support sending multiple commands in a single table.
+  if type(request) == 'table' then
+    local parts = {}
+    for i = 1, #message do
+      parts[i] = encode(message[i])
+    end
+    return concat(parts)
+  end
+
   local formatter = encoders[request]
 
   if not formatter then
