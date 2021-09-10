@@ -1,11 +1,12 @@
 --[[lit-meta
   name = "creationix/coro-postgres"
-  version = "0.6.4"
+  version = "0.7.0"
   dependencies = {
     "creationix/coro-wrapper@3",
     "creationix/coro-net@3",
     "creationix/postgres-codec@0.5",
-    "creationix/md5@1"
+    "creationix/md5@1",
+    "creationix/mutex-wrapper@0.1.0"
   }
   homepage = "https://github.com/creationix/lua-postgres/blob/master/coro-postgres.lua"
   description = "coro-net enabled postgres client using postgres-codec."
@@ -24,6 +25,7 @@ local encode = require('postgres-codec').encode
 local decode = require('postgres-codec').decode
 local getenv = require('os').getenv
 local md5 = require('md5').sumhexa
+local mutexWrapper = require 'creationix/mutex-wrapper'
 
 local function formatError(msg)
   return string.format(
@@ -40,6 +42,9 @@ end
 local function wrap(options, read, write, socket)
   assert(options.username, "options.username is required")
   assert(options.database, "options.database is required")
+
+  -- Only allow a single write at a time.  The rest will wait their turn.
+  write = mutexWrapper()(write)
 
   socket:nodelay(true)
 
